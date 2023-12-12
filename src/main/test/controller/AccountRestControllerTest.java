@@ -1,13 +1,10 @@
-package com.danit.springrest.resources;
+package controller;
 
 import com.danit.springrest.enums.Currency;
 import com.danit.springrest.model.Account;
 import com.danit.springrest.model.Customer;
 import com.danit.springrest.service.AccountService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,15 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/accounts")
 @Slf4j
-public class AccountRestController {
+public class AccountRestControllerTest {
     private final AccountService accountService;
 
-    public AccountRestController(AccountService accountService) {
+    public AccountRestControllerTest(AccountService accountService) {
         this.accountService = accountService;
     }
 

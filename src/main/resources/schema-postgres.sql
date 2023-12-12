@@ -7,7 +7,6 @@ CREATE TABLE customers (
                                phone_numbers INTEGER NOT NULL,
                                password VARCHAR(250) NOT NULL,
                                customer_id INTEGER references `employers` (id)
-
 );
 
 DROP TABLE IF EXISTS accounts CASCADE;
