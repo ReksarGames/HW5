@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class CustomerRequestDTO {
+
     @NotBlank(message = "Name cannot be blank")
     @Max(value = 2, message = "name cannot be blank > 2 words")
     private String name;

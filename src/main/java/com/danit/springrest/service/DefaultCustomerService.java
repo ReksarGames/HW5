@@ -1,7 +1,6 @@
 package com.danit.springrest.service;
 
 import com.danit.springrest.dao.CustomerRepository;
-import com.danit.springrest.enums.Currency;
 import com.danit.springrest.model.Account;
 import com.danit.springrest.model.Customer;
 import org.springframework.data.domain.Page;
@@ -10,7 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class DefaultCustomerService implements CustomerService {
@@ -30,11 +28,6 @@ public class DefaultCustomerService implements CustomerService {
     public Page<Customer> getAllCustomers(PageRequest pageRequest) {
         return customerRepository.findAll(pageRequest);
     }
-
-//    @Override
-//    public Page<Customer> getAllCustomers(int page, int size) {
-//        return customerRepository.findAll(PageRequest.of(page, size));
-//    }
 
     @Override
     public Customer getCustomerById(Long customerId) {
@@ -66,5 +59,19 @@ public class DefaultCustomerService implements CustomerService {
     @Override
     public void deleteCustomer(Long customerId) {
         customerRepository.deleteById(customerId);
+    }
+    @Override
+    public List<Account> getCustomerAccounts(Long customerId) {
+        Customer customer = getCustomerById(customerId);
+        return customer.getAccounts();
+    }
+
+    @Override
+    public Account addAccountToCustomer(Long customerId, Account account) {
+        Customer customer = getCustomerById(customerId);
+        account.setCustomer(customer);
+        customer.getAccounts().add(account);
+        customerRepository.save(customer);
+        return account;
     }
 }

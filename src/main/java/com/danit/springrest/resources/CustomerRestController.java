@@ -52,15 +52,16 @@ public class CustomerRestController {
                 .toUri();
         return ResponseEntity.created(location).body(addCustomer);
     }
-    @GetMapping("/createCustomer")
-    public ResponseEntity<Customer> createCustomer(@RequestParam String name, @RequestParam String email, @RequestParam int age){
-        Customer createdCustomer = customerService.createCustomer(name, email, age);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(createdCustomer.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(createdCustomer);
-    }
+//    @GetMapping("/createCustomer")
+//    public ResponseEntity<Customer> createCustomer(@RequestParam String name, @RequestParam String email, @RequestParam int age){
+//        Customer createdCustomer = customerService.createCustomer(name, email, age);
+//        createdCustomer.setPassword(encodedPassword);
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(createdCustomer.getId())
+//                .toUri();
+//        return ResponseEntity.created(location).body(createdCustomer);
+//    }
     @PutMapping("/{customerId}")
     public ResponseEntity<Void> updateCustomer(@PathVariable Long customerId, @RequestBody Customer updatedCustomer) {
         customerService.updateCustomer(customerId, updatedCustomer);
@@ -71,5 +72,19 @@ public class CustomerRestController {
         customerService.deleteCustomer(customerId);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/{customerId}/accounts")
+    public ResponseEntity<List<Account>> getCustomerAccounts(@PathVariable Long customerId) {
+        List<Account> accounts = customerService.getCustomerAccounts(customerId);
+        return ResponseEntity.ok(accounts);
+    }
 
+    @PostMapping("/{customerId}/accounts")
+    public ResponseEntity<Account> addAccountToCustomer(@PathVariable Long customerId, @RequestBody Account account) {
+        Account addedAccount = customerService.addAccountToCustomer(customerId, account);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(addedAccount.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(addedAccount);
+    }
 }

@@ -20,7 +20,7 @@ public class Customer extends AbstractEntity {
     private String name;
 
     @Column(name = "password", nullable = false)
-    private String password;
+    private String passwordEncoded;
 
     @Column(name = "phone_numbers", nullable = false)
     private String phoneNumbers;
@@ -59,6 +59,7 @@ public class Customer extends AbstractEntity {
         this.age = age;
     }
     public Customer(String name, String email, Integer age, List<Account> accounts, List<Employer> employers) {
+        this.id = getId();
         this.name = name;
         this.email = email;
         this.age = age;

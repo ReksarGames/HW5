@@ -4,7 +4,11 @@
 #    com: DEBUG
 spring:
   profiles:
-    active: local
+    active: prod
+  main:
+    allow-circular-references: true
+  security:
+    enable: true # Ваша конфигурация безопасности
 server:
   port: 9000
 
@@ -15,9 +19,6 @@ spring:
   config:
     activate:
       on-profile: local
-#  logging:
-#    level:
-#      org.hibernate: DEBUG
   h2:
     console:
       enabled: true
