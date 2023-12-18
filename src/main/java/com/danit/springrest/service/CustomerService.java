@@ -3,6 +3,7 @@ package com.danit.springrest.service;
 import com.danit.springrest.enums.Currency;
 import com.danit.springrest.model.Account;
 import com.danit.springrest.model.Customer;
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -20,4 +21,5 @@ public interface CustomerService {
     void deleteCustomer(Long customerId);
     List<Account> getCustomerAccounts(Long customerId);
     Account addAccountToCustomer(Long customerId, Account account);
+    Optional<Customer> getByLogin(@NonNull String login);
 }

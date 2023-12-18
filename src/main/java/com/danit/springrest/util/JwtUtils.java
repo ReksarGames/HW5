@@ -1,5 +1,6 @@
 package com.danit.springrest.util;
 
+import com.danit.springrest.domain.JwtAuthentication;
 import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,14 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JwtUtils {
+
+    public static JwtAuthentication generate(Claims claims) {
+        final JwtAuthentication jwtInfoToken = new JwtAuthentication();
+        jwtInfoToken.setRoles(getRoles(claims));
+        jwtInfoToken.setFirstName(claims.get("firstName", String.class));
+        jwtInfoToken.setUsername(claims.getSubject());
+        return jwtInfoToken;
+    }
 
     private static Set<Roles> getRoles(Claims claims) {
         final List<Map<String, String>> roles = claims.get("roles", List.class);
@@ -28,7 +37,6 @@ public final class JwtUtils {
 
         @Override
         public String getAuthority() {
-
             return value;
         }
     }

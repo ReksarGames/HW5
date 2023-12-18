@@ -33,3 +33,9 @@ CREATE TABLE customerEmployment (
                        customer_id INTEGER REFERENCES customers (id) ,
                        employer_id INTEGER REFERENCES employers (id)
 );
+DROP TABLE IF EXISTS roles CASCADE;
+CREATE TABLE roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(250) NOT NULL,
+    customer_id INTEGER REFERENCES customers (id)
+)

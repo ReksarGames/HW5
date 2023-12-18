@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     // Используйте именованный запрос
@@ -17,5 +19,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     // Используйте именованный запрос
     @Query("SELECT a FROM Account a WHERE a.customer.id = ?1")
     List<Account> getAccountsByCustomerId(Long customerId);
+    Optional<Customer> findUsersByName(String name);
 
 }

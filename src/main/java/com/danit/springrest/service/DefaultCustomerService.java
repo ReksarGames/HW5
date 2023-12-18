@@ -3,12 +3,14 @@ package com.danit.springrest.service;
 import com.danit.springrest.dao.CustomerRepository;
 import com.danit.springrest.model.Account;
 import com.danit.springrest.model.Customer;
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DefaultCustomerService implements CustomerService {
@@ -73,5 +75,8 @@ public class DefaultCustomerService implements CustomerService {
         customer.getAccounts().add(account);
         customerRepository.save(customer);
         return account;
+    }
+    public Optional<Customer> getByLogin(@NonNull String login) {
+        return customerRepository.findUsersByName(login);
     }
 }

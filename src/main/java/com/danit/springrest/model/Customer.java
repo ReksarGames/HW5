@@ -1,13 +1,17 @@
 package com.danit.springrest.model;
 
+import com.danit.springrest.domain.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "customers")
 @NoArgsConstructor
+@AllArgsConstructor //TODO: 14:14 17.12
 @Setter
 @Getter
 @NamedEntityGraph(name = "customerWithAccountsAndEmployers",
@@ -34,6 +38,8 @@ public class Customer extends AbstractEntity {
     @OneToMany
     @JoinColumn(name = "customer_id")
     private List<Account> accounts;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Role> roles = new HashSet<>();
 
     @ManyToMany(cascade = {
             CascadeType.DETACH,
