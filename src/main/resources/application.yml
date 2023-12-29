@@ -11,6 +11,7 @@ spring:
     active: prod
   main:
     allow-circular-references: true
+    allow-bean-definition-overriding: true
   security:
     enable: true # Ваша конфигурация безопасности
 server:

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,7 +24,10 @@ public class BootRestApplication implements ApplicationRunner {
     public static void main(String[] args) {
         SpringApplication.run(BootRestApplication.class, args);
     }
-
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
     @Override public void run(ApplicationArguments args) throws Exception {
         System.out.println("http://localhost:9000/swagger-ui/index.html");
         System.out.println("http://localhost:9000/h2-console");
@@ -32,6 +36,8 @@ public class BootRestApplication implements ApplicationRunner {
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Bean
     public OpenAPI springShopOpenAPI() {
         return new OpenAPI()

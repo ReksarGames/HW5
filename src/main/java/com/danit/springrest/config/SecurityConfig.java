@@ -1,5 +1,6 @@
 package com.danit.springrest.config;
 
+import com.danit.springrest.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +20,27 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.logging.Logger;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @RequiredArgsConstructor
 @Slf4j
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfiguration {
+@Configuration
+public class SecurityConfig  {
     private static final Logger logger = Logger.getLogger(SecurityConfig.class.getName());
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    private PasswordEncoder passwordEncoder;
+    private JwtFilter jwtFilter;
+
+    @Autowired
+    public SecurityConfig(PasswordEncoder passwordEncoder, JwtFilter jwtFilter) {
+        this.passwordEncoder = passwordEncoder;
+        this.jwtFilter = jwtFilter;
     }
+
     @Bean
     public UserDetailsService userDetailsService() {
-        User.UserBuilder users = User.builder().passwordEncoder(password -> passwordEncoder().encode(password));
+        User.UserBuilder users = User.builder().passwordEncoder(password -> passwordEncoder.encode(password));
         UserDetails user = User.builder()
                 .username("sa")
                 .password("sa")
@@ -37,63 +48,84 @@ public class SecurityConfig extends WebSecurityConfiguration {
                 .build();
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         manager.createUser(users.username("user").password("password").roles("USER").build());
-        manager.createUser(users.username("admin").password("password").roles("USER", "ADMIN").build());
+        manager.createUser(users.username("1").password("1").roles("USER", "ADMIN").build());
         manager.createUser(user);
 
         logger.warning("User password: " + users.username("user").password("password").roles("USER").build().getPassword());
         logger.warning("Admin password: " + users.username("admin").password("password").roles("USER", "ADMIN").build().getPassword());
         return manager;
     }
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/login").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/user/**").hasRole("USER")
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
-        return http.build();
-    }
 //    @Bean
-//    public SecurityFilterChain formLoginFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .anyRequest().authenticated()
-//                )
-//                .formLogin(withDefaults());
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http.csrf().disable()
+//                .authorizeHttpRequests()
+//                .requestMatchers("/login").permitAll()
+//                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//                .requestMatchers("/api/user/**").hasRole("USER")
+//                .anyRequest().authenticated()
+//                .and()
+//                .httpBasic();
 //        return http.build();
 //    }
+
+//@Bean
+//public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//    http
+//
+//            .httpBasic().disable()
+//            .csrf().disable()
+//            .authorizeHttpRequests(authorization -> authorization
+//                    .requestMatchers("/login", "/token","/oauth/**").permitAll()
+//                    .anyRequest().authenticated()
+//            )
+//            .formLogin().permitAll()
+//                .defaultSuccessUrl("/dashboard")
+//                .and()
+//            .logout()
+//                .invalidateHttpSession(true)
+//                .clearAuthentication(true)
+//                .deleteCookies("JSESSIONID")
+//                .logoutSuccessUrl("/login").permitAll()
+//            .and()
+//            .exceptionHandling()
+//                .accessDeniedPage("/403");
+//
+//    return http.build();
+//}
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
                 .httpBasic().disable()
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .cors().disable()
+                .authorizeHttpRequests(authorization -> authorization
+                        .requestMatchers("/login", "/token", "/css/**", "/js/**", "/registration", "/new", "http://localhost:9000/h2-console" ).permitAll()
+                        .requestMatchers("/customers/**", "/employers/**").hasAnyAuthority(JwtUtils.Roles.USER.name())
+                        .requestMatchers("/**").hasAnyAuthority(JwtUtils.Roles.ADMIN.name())
+                        .anyRequest().permitAll()
+//                        .requestMatchers("/login", "/token","/oauth/**").permitAll()
+//                        .anyRequest().authenticated()
+                )
+                .rememberMe()
+                .tokenValiditySeconds(86400) // 24h // 7d default
                 .and()
-                .authorizeHttpRequests(
-                        authz -> authz
-                                .requestMatchers("/api/auth/login", "/api/auth/token").permitAll()
-                                .anyRequest().authenticated()
-//                                .and()
-//                                .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                ).build();
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+                .formLogin().permitAll()
+                    .defaultSuccessUrl("/dashboard")
+                    .and()
+                .logout()
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true)
+                    .logoutSuccessUrl("/login").permitAll()
+                .and()
+                .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                    .accessDeniedPage("/403");
 
         return http.build();
     }
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .requestMatchers("/public/**").permitAll() // Разрешаем доступ к /public/**
-                .requestMatchers("/admin/**").hasRole("ADMIN") // Требуем роль ADMIN для /admin/**
-                .anyRequest().authenticated() // Все остальные запросы требуют аутентификации
-                .and()
-                .formLogin()
-                .loginPage("/login") // Указываем страницу логина
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll();
-    }
+
 }

@@ -31,7 +31,7 @@ public final class JwtUtils {
     }
 
     @RequiredArgsConstructor
-    public static enum Roles implements GrantedAuthority {
+    public enum Roles implements GrantedAuthority {
         USER("USER"), ADMIN("ADMIN");
         private final String value;
 
